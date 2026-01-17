@@ -28,7 +28,7 @@ class EmailNotifier extends StateNotifier<EmailState> {
         isImageVerified: isImageVerified,
       );
     } catch (e) {
-      state = EmailError(e.toString());
+      state = const EmailError('Unable to read the email file.');
     }
   }
 }
