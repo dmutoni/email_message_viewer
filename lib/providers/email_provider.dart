@@ -19,10 +19,13 @@ class EmailNotifier extends StateNotifier<EmailState> {
     try {
       final email = await _repository.loadEmail();
 
+      final isBodyVerified = await _repository.verifyBody(email);
+      final isImageVerified = await _repository.verifyImage(email);
+
       state = EmailLoaded(
         email: email,
-        isBodyVerified: false,
-        isImageVerified: false,
+        isBodyVerified: isBodyVerified,
+        isImageVerified: isImageVerified,
       );
     } catch (e) {
       state = EmailError(e.toString());
