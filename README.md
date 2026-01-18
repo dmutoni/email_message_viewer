@@ -17,6 +17,7 @@ On startup, the app:
    - the attached image
 4. Compares the computed hashes with the hashes embedded in the message
 5. Displays the email content along with verification results
+6. Theme adapts to light/dark modes
 
 An email is considered **legitimate** if the recomputed hashes match the stored hashes.  
 If they do not match, the email is displayed but flagged as **unverified**.
@@ -46,6 +47,7 @@ Structural failures (missing file, invalid protobuf) are handled separately as e
 - **Repository pattern** for data and verification logic
 - **Protocol Buffers** for binary message serialization
 - **crypto (SHA-256)** for integrity verification
+- **Shimmer** for loading indicators
 
 Business logic is kept out of the UI and tested independently.
 
