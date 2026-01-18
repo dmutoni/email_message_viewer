@@ -41,7 +41,7 @@ Structural failures (missing file, invalid protobuf) are handled separately as e
 
 ## Architecture Overview
 
-- **Flutter** for UI
+- **Flutter** for UI (Version 3.38.7 / Dart 3.10.7)
 - **Riverpod** for state management
 - **Repository pattern** for data and verification logic
 - **Protocol Buffers** for binary message serialization

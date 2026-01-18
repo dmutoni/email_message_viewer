@@ -1,4 +1,5 @@
 import 'dart:typed_data';
+import 'package:email_message_viewer/widgets/email_loader.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/email_provider.dart';
@@ -14,16 +15,7 @@ class EmailScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('Secure Email Viewer')),
       body: switch (state) {
-        EmailLoading() => const Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              CircularProgressIndicator(),
-              SizedBox(height: 12),
-              Text('Loading secure email…'),
-            ],
-          ),
-        ),
+        EmailLoading() => const EmailLoader(),
 
         EmailError(:final message) => Center(
           child: Text(message, style: const TextStyle(color: Colors.red)),
