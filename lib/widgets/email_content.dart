@@ -28,47 +28,51 @@ class EmailContent extends StatelessWidget {
             title: 'From',
             content: '${email.senderName} <${email.senderEmailAddress}>',
           ),
-
           const SizedBox(height: 12),
-
           Section(title: 'Subject', content: email.subject),
-
           const SizedBox(height: 16),
 
-          Row(
-            children: [
-              const Text(
-                'Body',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          if (!isBodyVerified || !isImageVerified) ...[
+            Text(
+              'Warning: Some parts of this email could not be verified and may be unsafe to view.',
+              style: const TextStyle(
+                color: Color(0xFFFF0000),
+                fontWeight: FontWeight.bold,
               ),
-              const SizedBox(width: 8),
-              VerificationBadge(isBodyVerified),
-            ],
-          ),
+            ),
+            const SizedBox(height: 12),
+          ] else ...[
+            Row(
+              children: [
+                const Text(
+                  'Body',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(width: 8),
+                VerificationBadge(isBodyVerified),
+              ],
+            ),
+            const SizedBox(height: 8),
 
-          const SizedBox(height: 8),
+            Text(email.body, style: const TextStyle(fontSize: 14)),
 
-          Text(
-            isBodyVerified ? email.body : 'This content could not be verified',
-            style: const TextStyle(fontSize: 14),
-          ),
+            const SizedBox(height: 24),
 
-          const SizedBox(height: 24),
+            Row(
+              children: [
+                const Text(
+                  'Attachment',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(width: 8),
+                VerificationBadge(isImageVerified),
+              ],
+            ),
 
-          Row(
-            children: [
-              const Text(
-                'Attachment',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(width: 8),
-              VerificationBadge(isImageVerified),
-            ],
-          ),
+            const SizedBox(height: 12),
 
-          const SizedBox(height: 12),
-
-          AttachmentViewer(bytes: Uint8List.fromList(email.attachedImage)),
+            AttachmentViewer(bytes: Uint8List.fromList(email.attachedImage)),
+          ],
         ],
       ),
     );

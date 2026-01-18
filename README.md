@@ -55,8 +55,8 @@ Business logic is kept out of the UI and tested independently.
 
 Email files are generated using a small Dart script that simulates an external email producer.
 
-- `helpers/generate_sample_email.dart` → generates a **legit** email
-- `helpers/generate_non_legit_email.dart` → generates a **tampered** email
+- `dart helpers/generate_sample_email.dart` → generates a **legit** email
+- `dart helpers/generate_non_legit_email.dart` → generates a **tampered** email
 
 These scripts:
 
@@ -86,5 +86,19 @@ Run tests with:
 ```bash
 flutter test
 ```
+
+Screenshots
+
+- Valid Email Light Mode
+
+  ![Valid Email Light Mode](assets/screenshots/valid_secure_email_light_mode.png)
+
+- Valid Email Dark Mode
+  ![Valid Email Dark Mode](assets/screenshots/valid_secure_email_dark_mode.png)
+
+- Tampered Email Light Mode
+  ![Tampered Email Light Mode](assets/screenshots/non_legit_email_light_mode.png)
+- Tampered Email Dark Mode
+  ![Tampered Email Dark Mode](assets/screenshots/non_legit_email_dark_mode.png)
 
 Author (Denyse U.Mutoni)

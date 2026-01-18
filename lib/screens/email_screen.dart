@@ -20,7 +20,7 @@ class EmailScreen extends ConsumerWidget {
         title: const Text('Secure Email Viewer'),
         actions: [
           IconButton(
-            icon: Icon(isDarkMode ? Icons.wb_sunny : Icons.nightlight_round),
+            icon: Icon(isDarkMode ? Icons.light_mode : Icons.dark_mode),
             onPressed: () {
               themeNotifier.toggleTheme();
             },
