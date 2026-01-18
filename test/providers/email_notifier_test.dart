@@ -1,9 +1,10 @@
+import 'package:email_message_viewer/data/enums/retrieval_state.dart';
 import 'package:email_message_viewer/data/models/email.pb.dart';
 import 'package:email_message_viewer/data/repository/email_repository.dart';
-import 'package:email_message_viewer/domain/email_state.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:email_message_viewer/providers/email_provider.dart';
+
 import '../helpers/test_email_factory.dart';
 
 class FakeEmailRepository implements EmailRepository {
@@ -22,7 +23,7 @@ class FakeEmailRepository implements EmailRepository {
 }
 
 void main() {
-  test('emits EmailLoaded with verified=true for legit email', () async {
+  test('loads email with verified=true for legit email', () async {
     final container = ProviderContainer(
       overrides: [
         emailRepositoryProvider.overrideWithValue(
@@ -33,23 +34,20 @@ void main() {
 
     addTearDown(container.dispose);
 
-    // Listen for state changes
-    final states = <EmailState>[];
-    container.listen(
-      emailProvider,
-      (_, next) => states.add(next),
-      fireImmediately: true,
-    );
+    // Wait for email to load
+    await container.read(emailProvider.notifier).loadEmail();
 
-    // Give async work time to complete
-    await Future.delayed(Duration.zero);
+    final state = container.read(emailProvider);
 
-    expect(states.last, isA<EmailLoaded>());
-    expect((states.last as EmailLoaded).isBodyVerified, true);
+    expect(state.retrievalState, RetrievalState.complete);
+    expect(state.email, isNotNull);
+    expect(state.isBodyVerified, true);
+    expect(state.isImageVerified, true);
+    expect(state.errorMessage, isNull);
   });
 
   test(
-    'emits EmailLoaded with verified=false for non-legit (tampered) email',
+    'loads email with verified=false for non-legit (tampered) email',
     () async {
       final container = ProviderContainer(
         overrides: [
@@ -61,27 +59,37 @@ void main() {
 
       addTearDown(container.dispose);
 
-      final states = <EmailState>[];
+      // Wait for email to load
+      await container.read(emailProvider.notifier).loadEmail();
 
-      container.listen(
-        emailProvider,
-        (_, next) => states.add(next),
-        fireImmediately: true,
-      );
+      final state = container.read(emailProvider);
 
-      // Allow async loadEmail() to complete
-      await Future.delayed(Duration.zero);
-
-      // Final state should still be EmailLoaded
-      expect(states.last, isA<EmailLoaded>());
-
-      final loaded = states.last as EmailLoaded;
-
-      // Body integrity failed
-      expect(loaded.isBodyVerified, false);
-
-      // Image integrity still passes (based on factory)
-      expect(loaded.isImageVerified, true);
+      expect(state.retrievalState, RetrievalState.complete);
+      expect(state.email, isNotNull);
+      expect(state.isBodyVerified, false); // Body integrity failed
+      expect(state.isImageVerified, true); // Image integrity passes
+      expect(state.errorMessage, isNull);
     },
   );
+
+  test('handles loading state correctly', () async {
+    final container = ProviderContainer(
+      overrides: [
+        emailRepositoryProvider.overrideWithValue(
+          FakeEmailRepository(TestEmailFactory.legitEmail()),
+        ),
+      ],
+    );
+
+    addTearDown(container.dispose);
+
+    // Initial state should be loading
+    final initialState = container.read(emailProvider);
+    expect(initialState.retrievalState, RetrievalState.loading);
+
+    await container.read(emailProvider.notifier).loadEmail();
+
+    final finalState = container.read(emailProvider);
+    expect(finalState.retrievalState, RetrievalState.complete);
+  });
 }
