@@ -23,7 +23,7 @@ class _EmailState {
     EmailMessage? email,
     bool? isBodyVerified,
     bool? isImageVerified,
-    RetrievalState? retrievalState,
+    RetrievalState? retrievalState = RetrievalState.loading,
     String? errorMessage,
   }) {
     return _EmailState(
@@ -39,7 +39,8 @@ class _EmailState {
 class EmailNotifier extends StateNotifier<_EmailState> {
   final EmailRepository _repository;
 
-  EmailNotifier(this._repository) : super(_EmailState());
+  EmailNotifier(this._repository)
+    : super(_EmailState(retrievalState: RetrievalState.loading));
 
   Future<void> loadEmail() async {
     bool isBodyVerified = false;
