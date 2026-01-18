@@ -1,37 +1,33 @@
 import 'dart:typed_data';
+import 'package:email_message_viewer/data/enums/retrieval_state.dart';
 import 'package:email_message_viewer/widgets/email_loader.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/email_provider.dart';
-import '../domain/email_state.dart';
 
 class EmailScreen extends ConsumerWidget {
   const EmailScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final state = ref.watch(emailProvider);
+    final emailState = ref.watch(emailProvider);
 
     return Scaffold(
       appBar: AppBar(title: const Text('Secure Email Viewer')),
-      body: switch (state) {
-        EmailLoading() => const EmailLoader(),
-
-        EmailError(:final message) => Center(
-          child: Text(message, style: const TextStyle(color: Colors.red)),
-        ),
-
-        EmailLoaded(
-          :final email,
-          :final isBodyVerified,
-          :final isImageVerified,
-        ) =>
-          _EmailContent(
-            email: email,
-            isBodyVerified: isBodyVerified,
-            isImageVerified: isImageVerified,
-          ),
-      },
+      body: emailState.retrievalState == RetrievalState.loading
+          ? const EmailLoader()
+          : emailState.retrievalState == RetrievalState.complete
+          ? _EmailContent(
+              email: emailState.email ?? '',
+              isBodyVerified: emailState.isBodyVerified ?? false,
+              isImageVerified: emailState.isImageVerified ?? false,
+            )
+          : Center(
+              child: Text(
+                emailState.errorMessage ?? 'An unknown error occurred',
+                style: TextStyle(color: Colors.red),
+              ),
+            ),
     );
   }
 }
@@ -140,7 +136,7 @@ class _EmailImage extends StatelessWidget {
       child: Image.memory(
         bytes,
         fit: BoxFit.cover,
-        errorBuilder: (_, __, ___) {
+        errorBuilder: (_, _, _) {
           return const Text(
             'Failed to load image',
             style: TextStyle(color: Colors.red),

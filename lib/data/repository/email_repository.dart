@@ -19,8 +19,8 @@ class EmailRepositoryImpl implements EmailRepository {
       final byteData = await rootBundle.load(_assetPath);
       final bytes = byteData.buffer.asUint8List();
       return EmailMessage.fromBuffer(bytes);
-    } catch (_) {
-      throw Exception('Corrupted or invalid email file');
+    } catch (e) {
+      throw Exception('Corrupted or invalid email data.');
     }
   }
 
